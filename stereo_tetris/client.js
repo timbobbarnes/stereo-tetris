@@ -6,7 +6,6 @@ var Client = IgeClass.extend({
         self.gameTextures = {
 		    anaglyph: new IgeTexture('./assets/textures/smartTextures/StereoTexture.js'),
             score: new IgeFontSheet('./assets/textures/fonts/adobe_arabic_26pt.png'),
-            outline: new IgeTexture('./assets/textures/smartTextures/BoardOutline.js')
         }
 
         ige.on('texturesLoaded', function () {
@@ -58,7 +57,6 @@ var Client = IgeClass.extend({
             this.tetris = new TetrisController(this.gameTextures.anaglyph)
                 .id('tetrisGame')
                 .mount(ige.$('baseScene'))
-                .setOutline(this.gameTextures.outline)
 
             this.tetris.on('linesCleared', this.score.addLines, this.score)
 

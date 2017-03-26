@@ -1,10 +1,10 @@
 var TetrisController = IgeTileMap2d.extend({
     classId: 'TetrisController',
 
-    init: function (texture) {
+    init: function (tetrisSquareTexture) {
         IgeTileMap2d.prototype.init.call(this)
-        var px = 40
-        this.texture = texture
+        var px = 30
+        this.tetrisSquareTexture = tetrisSquareTexture
         this.depth(0)
             .tileWidth(px)
             .tileHeight(px)
@@ -13,12 +13,25 @@ var TetrisController = IgeTileMap2d.extend({
             .drawMouse(false)
             .translateTo(-this.gridSize().x / 2 * px,
                          -this.gridSize().y / 2 * px, 0)
-        this.outline = new IgeEntity()
-            .width( this.gridSize().x * px)
-            .height(this.gridSize().y * px)
-            .depth(1)
-            .translateTo(this.gridSize().x / 2 * px, this.gridSize().y  / 2 * px, 0)
-            .mount(this)
+            .texture(new IgeTexture({
+                render: function (ctx, entity) {
+                    ctx.fillStyle = '#002f2f'
+                    ctx.fillRect(0, 0, entity._bounds2d.x, entity._bounds2d.y)
+
+                    ctx.strokeStyle = '#ffffff'
+
+                    ctx.beginPath()
+
+                    ctx.moveTo(0,0)
+
+                    ctx.lineTo(                 0, entity._bounds2d.y)
+                    ctx.lineTo(entity._bounds2d.x, entity._bounds2d.y)
+                    ctx.lineTo(entity._bounds2d.x,                  0)
+                    ctx.lineTo(                 0,                  0)
+
+                    ctx.stroke()
+                }
+            }))
         this.base = []
         this.makeNewPiece()
 
@@ -59,11 +72,6 @@ var TetrisController = IgeTileMap2d.extend({
         IgeTileMap2d.prototype.destroy.call(this)
     },
 
-    setOutline: function (inTexture) {
-        this.outline.texture(inTexture)
-        return this
-    },
-
     increaseSpeed: function () {
         if (this.nesFrameDelay > 10)
             this.nesFrameDelay -= 5
@@ -85,7 +93,8 @@ var TetrisController = IgeTileMap2d.extend({
             return Math.floor(Math.random() * max)
         }
 
-        this.piece = new TetrisPiece(this, this.texture, getRandomInt(7)).id('testBox')
+        this.piece = new TetrisPiece(this, this.tetrisSquareTexture,
+                                     getRandomInt(7)).id('testBox')
         this.piece.on('stuck', function () {
             this.clearAnyFormedLines()
                 .recolorBase()
