@@ -1,7 +1,7 @@
 var TetrisPiece = IgeObject.extend({
     classId: 'TetrisPiece',
 
-    init: function (tileMap, texture, pieceType) {
+    init: function (tileMap, pieceType) {
         IgeObject.prototype.init.call(this)
 
         var allPieceLocations = [
@@ -33,14 +33,27 @@ var TetrisPiece = IgeObject.extend({
         for (var i = 0; i < this.pieceLocations.length; ++i) {
             var startPos = [4 + this.pieceLocations[i][0],
                                 this.pieceLocations[i][1]]
-            var newPiece = new TetrisSquare(tileMap, startPos, texture)
-            this.pieces.push(newPiece.setStereo(1))
+            this.pieces.push(new TetrisSquare(tileMap, startPos))
 
             this.pieceLocations[i][0] -= orig[0]
             this.pieceLocations[i][1] -= orig[1]
         }
 
         this.mount(tileMap)
+    },
+
+    setStereo: function (x) {
+        for (var i = 0; i < this.pieces.length; ++i) {
+            this.pieces[i].setStereo(x)
+        }
+        return this
+    },
+
+    setContrast: function (x) {
+        for (var i = 0; i < this.pieces.length; ++i) {
+            this.pieces[i].setContrast(x)
+        }
+        return this
     },
 
     step: function () {

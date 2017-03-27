@@ -4,7 +4,6 @@ var Client = IgeClass.extend({
     init: function () {
         var self = this
         self.gameTextures = {
-		    anaglyph: new IgeTexture('./assets/textures/smartTextures/StereoTexture.js'),
             score: new IgeFontSheet('./assets/textures/fonts/adobe_arabic_26pt.png'),
         }
 
@@ -34,6 +33,7 @@ var Client = IgeClass.extend({
                             .middle(0)
                             .mount(ige.$('baseScene'))
                             .text('READY???')
+        this.contrast = [1, 1]
         this.waitEv = ige.input.on('keyUp', function (event, keyCode) {
             if (keyCode === ige.input.key.enter) {
                 this.scoreText.destroy()
@@ -54,7 +54,7 @@ var Client = IgeClass.extend({
                 this.tetris.destroy()
                 this.score.off('newLevel', this.newLevelEv)
             }
-            this.tetris = new TetrisController(this.gameTextures.anaglyph)
+            this.tetris = new TetrisController(this.contrast)
                 .id('tetrisGame')
                 .mount(ige.$('baseScene'))
 

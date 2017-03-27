@@ -1,10 +1,10 @@
 var TetrisController = IgeTileMap2d.extend({
     classId: 'TetrisController',
 
-    init: function (tetrisSquareTexture) {
+    init: function (contrast) {
         IgeTileMap2d.prototype.init.call(this)
         var px = 30
-        this.tetrisSquareTexture = tetrisSquareTexture
+        this.contrast = contrast
         this.depth(0)
             .tileWidth(px)
             .tileHeight(px)
@@ -13,25 +13,7 @@ var TetrisController = IgeTileMap2d.extend({
             .drawMouse(false)
             .translateTo(-this.gridSize().x / 2 * px,
                          -this.gridSize().y / 2 * px, 0)
-            .texture(new IgeTexture({
-                render: function (ctx, entity) {
-                    ctx.fillStyle = '#002f2f'
-                    ctx.fillRect(0, 0, entity._bounds2d.x, entity._bounds2d.y)
-
-                    ctx.strokeStyle = '#ffffff'
-
-                    ctx.beginPath()
-
-                    ctx.moveTo(0,0)
-
-                    ctx.lineTo(                 0, entity._bounds2d.y)
-                    ctx.lineTo(entity._bounds2d.x, entity._bounds2d.y)
-                    ctx.lineTo(entity._bounds2d.x,                  0)
-                    ctx.lineTo(                 0,                  0)
-
-                    ctx.stroke()
-                }
-            }))
+            .setBackgroundColor()
         this.base = []
         this.makeNewPiece()
 
@@ -54,8 +36,6 @@ var TetrisController = IgeTileMap2d.extend({
 
         this.myTimePerFrame = this.nesTPF * this.nesFrameDelay
         this.myClock = 0
-
-        this.highlightOccupied(true)
     },
 
     update: function (ctx, tickDelta) {
@@ -70,6 +50,33 @@ var TetrisController = IgeTileMap2d.extend({
     destroy: function () {
         ige.input.off('keyUp', this.keys)
         IgeTileMap2d.prototype.destroy.call(this)
+    },
+
+    setBackgroundColor: function () {
+        var fn = new AnaglyphFunctions()
+        var red  = fn.fractionAndContrastToColorHex(0, this.contrast[1])
+        var cyan = fn.fractionAndContrastToColorHex(0, this.contrast[0])
+        var rgbString = '#' + red + cyan + cyan
+
+        return this.texture(new IgeTexture({
+            render: function (ctx, entity) {
+                ctx.fillStyle = rgbString
+                ctx.fillRect(0, 0, entity._bounds2d.x, entity._bounds2d.y)
+
+                ctx.strokeStyle = '#ffffff'
+
+                ctx.beginPath()
+
+                ctx.moveTo(0,0)
+
+                ctx.lineTo(                 0, entity._bounds2d.y)
+                ctx.lineTo(entity._bounds2d.x, entity._bounds2d.y)
+                ctx.lineTo(entity._bounds2d.x,                  0)
+                ctx.lineTo(                 0,                  0)
+
+                ctx.stroke()
+            }
+        }))
     },
 
     increaseSpeed: function () {
@@ -93,8 +100,9 @@ var TetrisController = IgeTileMap2d.extend({
             return Math.floor(Math.random() * max)
         }
 
-        this.piece = new TetrisPiece(this, this.tetrisSquareTexture,
-                                     getRandomInt(7)).id('testBox')
+        this.piece = new TetrisPiece(this, getRandomInt(7)).id('testBox')
+        this.piece.setStereo(1)
+                  .setContrast(this.contrast)
         this.piece.on('stuck', function () {
             this.clearAnyFormedLines()
                 .recolorBase()

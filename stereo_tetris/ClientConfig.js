@@ -5,6 +5,7 @@ var igeClientConfig = {
 		'./gameClasses/TetrisController.js',
 		'./gameClasses/TetrisPiece.js',
 		'./gameClasses/TetrisSquare.js',
+        './gameClasses/AnaglyphFunctions.js',
 		
 		/* Standard game scripts */
 		'./client.js',
