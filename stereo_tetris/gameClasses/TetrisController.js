@@ -4,7 +4,26 @@ var TetrisController = IgeTileMap2d.extend({
     init: function (texture) {
         IgeTileMap2d.prototype.init.call(this)
         var px = 40
-        this.texture = texture
+        this.texture(new IgeTexture({
+            _contrastToFraction: function (x) {
+                return 0.5 - x / 2.0
+            },
+
+            _fractionToColorHex: function (x) {
+                return ("0" + Math.round(x * 255).toString(16)).slice(-2)
+            },
+
+            render: function (ctx, entity) {
+                var red = this._fractionToColorHex(
+                    this._contrastToFraction(texture.script.contrast[0]))
+                var green = this._fractionToColorHex(
+                    this._contrastToFraction(texture.script.contrast[1]))
+                var blue = green
+                ctx.fillStyle = '#' + red + green + blue
+                ctx.fillRect(0, 0, entity._bounds2d.x, entity._bounds2d.y)
+            }
+        }))
+        this.stereoTexture = texture
         this.depth(0)
             .tileWidth(px)
             .tileHeight(px)
@@ -85,7 +104,7 @@ var TetrisController = IgeTileMap2d.extend({
             return Math.floor(Math.random() * max)
         }
 
-        this.piece = new TetrisPiece(this, this.texture, getRandomInt(7)).id('testBox')
+        this.piece = new TetrisPiece(this, this.stereoTexture, getRandomInt(7)).id('testBox')
         this.piece.on('stuck', function () {
             this.clearAnyFormedLines()
                 .recolorBase()

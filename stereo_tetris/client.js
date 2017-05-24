@@ -37,6 +37,7 @@ var Client = IgeClass.extend({
                             .text('READY???')
         this.waitEv = ige.input.on('keyUp', function (event, keyCode) {
             if (keyCode === ige.input.key.enter) {
+                this.gameTextures.anaglyph.script.contrast = [0.05, 0.5]
                 this.scoreText.destroy()
                 delete this.scoreText
                 ige.input.off('keyUp', this.waitEv)
